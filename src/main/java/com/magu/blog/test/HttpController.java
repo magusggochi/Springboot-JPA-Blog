@@ -15,7 +15,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HttpController {
 		
-	    //인터넷 브라우저 요청은 get 밖에 할 수 없다.
+	
+		private static final String TAG = "HttpController : ";
+	    
+		//lombok 을 이용한 생성자와 게터 세터 확인
+		@GetMapping("/http/lombok")
+		public String lombokTest() {
+			Member m = new Member(1,"ssar","1234","email");
+			System.out.println(TAG + "getter : " + m.getId());
+			m.setId(5000);
+			System.out.println(TAG + "getter : " + m.getId());
+
+			return "lombok test 완료";
+		}
+		
+		//lombok 의 생성자 build를 이용한 요청
+		@GetMapping("/http/lombok2")
+		public String lombokTest2() {
+			Member2 m = Member2.builder().username("ssar").password("1234").email("tradet@naver.com").build();
+			System.out.println(TAG + "getter : " + m.getUsername());
+			m.setUsername("kakao");
+			System.out.println(TAG + "getter : " + m.getUsername());
+
+			return "lombok test 완료";
+		}
+		
+		//인터넷 브라우저 요청은 get 밖에 할 수 없다.
 		//http://localhost:8080/http/get (select)
 		@GetMapping("/http/get")
 		public String getTest(Member m ) { //message Converter 가 해줌
