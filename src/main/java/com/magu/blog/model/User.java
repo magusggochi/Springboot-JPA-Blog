@@ -9,10 +9,20 @@ import javax.persistence.Id;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 // ORM - > JAVA ( JAVA뿐만아니라 다른언어 포함 ) Object - >  테이블로 매핑해주는 기술 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder // 빌더 패턴!!
 @Entity // User 클래스가 MySQL에 테이블이 생성된다.
 public class User {
-	
+	  
 	@Id // primary key 
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 프로젝트에서 연결된 DB의 넘버링 전략을 따라간다. AND use-new-id-generator-mappings: falseuse-new-id-generator-mappings: false 라고 YML 에 표현되어있는데 FALSE로 해놓으면 JPA 전략 넘버링을 따라가지 않는다는 뜻
 	private int id; // 시퀀스, mysql에서는 auto_increment 하도록 명시
@@ -30,8 +40,8 @@ public class User {
 	private String role; // Enum을 쓰는게 좋다. // admin, user, manager 등 각각에 맞게 해야되는데 스트링이면 managerrrr이런식으로 잘못쓸 수 있다.
 	
 	@CreationTimestamp // 시간이 자동으로 입력된다.
-	private java.sql.Timestamp createdate;
-	
+	private java.sql.Timestamp createDate;
+	/*
 // yml 하위  jpa 에 관련된 것 	
 //	  jpa:
 //		    open-in-view: true
@@ -43,4 +53,6 @@ public class User {
 //		    show-sql: true   //  sql 에 대한 내용을 console에 표기해준다.
 //		    properties:
 //		      hibernate.format_sql: true // 위의 console 표기를 이쁘게 줄바꿈해준다
+ * */
+ 
 }
