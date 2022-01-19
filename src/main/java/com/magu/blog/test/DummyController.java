@@ -3,15 +3,20 @@ package com.magu.blog.test;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Sort;
 
 import com.magu.blog.model.RoleType;
 import com.magu.blog.model.User;
@@ -24,7 +29,50 @@ public class DummyController {
 							  // 의존성 주입 (DI)
 		@Autowired // 이걸붙여주면 위의 restController 메모리에 올려줄 때 같이 올려준다.
 		private UserRepository userRepository;
-	
+		
+		@DeleteMapping("/dummy/user/{id}")
+		public String deleteUser(@PathVariable int id) {
+			try {
+				userRepository.deleteById(id);
+			}catch (EmptyResultDataAccessException e) {
+				return "삭제에 실패했습니다. 해당 id는 DB에 없습니다.";
+			}catch(Exception e) {
+				return "삭제에 실패했습니다.";
+			}
+			
+			return "회원 삭제되었습니다. id : " + id;
+		}
+		
+		
+		//save 함수는 id를 전달하지 않으면 insert를 해주고 
+		//save 함수는 id를 전달하면 해당 id에 대한 데이터가 있으면 update를 해주고
+		//save 함수는 id를 전달하면 해당 id에 대한 데이터가 없으면 insert를 합니다.
+		// email, password
+		@Transactional //함수 종료시에 자동 commit 이 됨. 더티 체킹을 이용한 save나 update 없이 데이터 업데이트
+		@PutMapping("/dummy/user/{id}")
+		public User updateUser(@PathVariable int id, @RequestBody User requestUser) {
+			//userRepository.updateUser(id, requestUser)
+			//User user = userRepository.getById(id);
+			System.out.println(id);
+			System.out.println(requestUser.getEmail());
+			System.out.println(requestUser.getPassword());
+			
+			//1번 수행식
+//			requestUser.setId(id); //아이디 값을 입력하고 아래의  save 메서드를 써도 id를 찾아서 있으면 update를 해준다. 근데 null로 들어가는게 너무 많다.
+//			requestUser.setUsername("ssar");
+//			userRepository.save(requestUser);
+			
+			//2번수행식
+			User user = userRepository.findById(id).orElseThrow(()->{  //검색해서 들고올 때 영속화가 된다.
+				return new IllegalArgumentException("수정에 실패했습니다.");
+			});
+			user.setPassword(requestUser.getPassword());
+			user.setEmail(requestUser.getEmail());
+			//userRepository.save(user);
+			
+			// @Transactional 을 걸면 위의 .save를 하지 않는다. = >  더티 체킹 ( 영속화 되어있을 때 변경을 감지하고 db를 업데이트 시킴)
+			return user;
+		}
 		
 		@GetMapping("/dummy/users")
 		public List<User> list(){
@@ -41,7 +89,7 @@ public class DummyController {
 //			Page<User> pagingUser = userRepository.findAll(pageable);//findAll(pageable)
 //			if(pagingUser.isLast()) {
 //				
-//			}
+//			}12
 //			List<User> users = pagingUser.getContent();
 			
 			return users;
@@ -60,7 +108,7 @@ public class DummyController {
 			
 //			User user = userRepository.findById(id).get(); //음~나는 그럴일 없어 .get() 바로 줌
 //			User user = userRepository.findById(id).orElseGet(new Supplier<User>() {
-//				// 인터페이스는 new 하려면 익명 객체가 필요함 그리고 오버라이딩 해줘야함 
+//				/ / 인터페이스는 new 하려면 익명 객체가 필요함 그리고 오버라이딩 해줘야함 
 //				@Override
 //				public User get() {
 //					// TODO Auto-generated method stub
