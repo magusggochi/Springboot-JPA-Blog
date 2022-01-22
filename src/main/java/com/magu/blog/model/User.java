@@ -31,7 +31,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 프로젝트에서 연결된 DB의 넘버링 전략을 따라간다. AND use-new-id-generator-mappings: falseuse-new-id-generator-mappings: false 라고 YML 에 표현되어있는데 FALSE로 해놓으면 JPA 전략 넘버링을 따라가지 않는다는 뜻
 	private int id; // 시퀀스, mysql에서는 auto_increment 하도록 명시
 	
-	@Column(nullable = false, length = 30)
+	@Column(nullable = false, length = 30, unique =true)
 	private String username; // 아이디 역할
 	
 	@Column(nullable = false, length = 100) // 123456 = > 해쉬 (비밀번호 암호화)
