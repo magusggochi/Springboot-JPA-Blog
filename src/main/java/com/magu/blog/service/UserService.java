@@ -2,9 +2,11 @@ package com.magu.blog.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.magu.blog.model.RoleType;
 import com.magu.blog.model.User;
 import com.magu.blog.repository.UserRepository;
 
@@ -15,10 +17,18 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private BCryptPasswordEncoder encoder;
 
 	@Transactional
 	public int userSave(User user) {
 		try {
+			
+			String rawPassword = user.getPassword();
+			String encPassWORD = encoder.encode(rawPassword); //해쉬
+			user.setPassword(encPassWORD);
+			user.setRole(RoleType.USER);
 			userRepository.save(user);
 			return 1;
 		} catch (Exception e) {
@@ -28,8 +38,21 @@ public class UserService {
 		return -1;
 	}
 	
-	@Transactional(readOnly = true) //select 할 때트랜잭션 시작, 해당서비스가 종료될 때 트랜잭션 종료( 이때까지의 "정합성" 을 유지할 수 있다.)
-	public User userLogin(User user) {
-		return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//security 쓰기 전 기본 로그인 	
+//	@Transactional(readOnly = true) //select 할 때트랜잭션 시작, 해당서비스가 종료될 때 트랜잭션 종료( 이때까지의 "정합성" 을 유지할 수 있다.)
+//	public User userLogin(User user) {
+//		return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+//	}
 }

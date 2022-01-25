@@ -6,10 +6,6 @@ let index = {
 			$('#btn-user-save').on("click", ()=>{  //fucntion(){}, 대신 ()=> 쓰는 이유는 this를 바인딩하기 위해서!!! ( 이 함수 내부의 this 값이랑 이 외부 index의 this를 다르게 쓰기 위해서 function을 사용하면 this 가 외부 내부 같음)
 				this.save();
 			});
-			$('#btn-login').on("click", ()=>{  //fucntion(){}, 대신 ()=> 쓰는 이유는 this를 바인딩하기 위해서!!! ( 이 함수 내부의 this 값이랑 이 외부 index의 this를 다르게 쓰기 위해서 function을 사용하면 this 가 외부 내부 같음)
-				this.login();
-			});
-			
 		},
 		
 		save: function(){
@@ -27,39 +23,18 @@ let index = {
 			$.ajax({
 				//회원가입 수행요청
 				type: "POST",
-				url: "/blog/api/user",
+				url: "/auth/joinProc",
 				data: JSON.stringify(data), //http body데이터
 				contentType:"application/json; charset=utf-8", //body 데이터가 어떤 타입인지 (MIME)
 				dataType:"json" // 요청을 서버로 해서 응답이 왔을 때 기본적으로 모든 것이 문자열(String) 근데 생긴게 json이면 = > javascript 오브젝트로 변경
 			}).done(function(response){
 				console.log(response);
 				alert("회원가입이 완료되었습니다.");
-				location.href="/blog";
-			}).fail(function(error){
-				alert(JSON.stringify(error));
-			}); 
-		},
-		
-		login: function(){
-			let data = {
-					username : $('#username').val(),
-					password : $('#password').val(),
-			};
-			$.ajax({
-				type: "POST",
-				url: "/blog/api/user/login",
-				data: JSON.stringify(data), //http body 데이터
-				contentType:"application/json; charset=utf-8", // body데이터 타입 
-				dataType:"json" // 요청을 서버로 해서 응답이 왔을 때 기본적으로 모든 것이 문자열(String) 근데 생긴게 json이면 = > javascript 오브젝트로 변경
-			}).done(function(response){
-				console.log(response);
-				alert("로그인이 완료되었습니다.");
-				location.href="/blog";
+				location.href="/";
 			}).fail(function(error){
 				alert(JSON.stringify(error));
 			}); 
 		}
-			
 }
 
 index.init();
