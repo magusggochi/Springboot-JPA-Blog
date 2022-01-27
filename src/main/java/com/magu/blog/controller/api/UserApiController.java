@@ -1,12 +1,22 @@
 package com.magu.blog.controller.api;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.magu.blog.config.auth.PrincipalDetail;
 import com.magu.blog.dto.ResponseDto;
 import com.magu.blog.model.RoleType;
 import com.magu.blog.model.User;
@@ -18,6 +28,9 @@ public class UserApiController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
 	@PostMapping("/auth/joinProc")
 	public ResponseDto<?> userJoin(@RequestBody User user) {
 		// 실제로 DB에 INSERT를 하고 아래에서 RETURN이 되면 된다.
@@ -25,6 +38,31 @@ public class UserApiController {
 		int result = userService.userSave(user);
 
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), result); // 자바오브젝트를 JSON으로 변환해서 리턴 (JACKSON)
+	}
+	
+	@PutMapping("/auth/updateProc")
+	public ResponseDto<?> update(@RequestBody User user){
+		
+		userService.updateUser(user);
+		
+		// 트랜잭션이 종료되서 db 값은 변경되었지만 세션 값을 바꾸지 않으면 회원정보가 바뀌지 않기 때문에 principal 값이 변경되지 않았다.
+		// 로그아웃 후 로그인을 해야지 변경이 되기 때문에 직접 세션 값을 변경해줄 것임.
+		
+		//아래와 같이 내가 강제로 집어 넣는것은 안되는것을 확인했다.
+//		@AuthenticationPrincipal PrincipalDetail principal,
+//		HttpSession session
+		
+//		Authentication authentication = 
+//		new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+//		SecurityContext securityContext = SecurityContextHolder.getContext();
+//		securityContext.setAuthentication(authentication);
+//		session.setAttribute("SPIRNG_SECURITY_CONTEXT", securityContext);
+		
+		//그래서 다른방법을 찾아보자.
+		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1); // 자바오브젝트를 JSON으로 변환해서 리턴 (JACKSON)
 	}
 
 	
