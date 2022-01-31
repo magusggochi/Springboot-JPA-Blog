@@ -15,6 +15,10 @@ let index = {
 				this.update();
 			});
 			
+			$('#btn-reply-save').on("click", ()=>{  
+				this.replySave();
+			});
+			
 		},
 		
 		save: function(){
@@ -73,7 +77,44 @@ let index = {
 			}).fail(function(error){
 				alert(JSON.stringify(error));
 			}); 
+		},
+		
+		replySave: function(){
+			let data = {
+					content : $('#reply-content').val()
+			};
+			let boardId = $('#boardId').val();
+			
+			//console.log(data);
+			$.ajax({
+				type: "POST",
+				url: `/api/board/${boardId}/reply`,
+				data: JSON.stringify(data), //http body데이터
+				contentType:"application/json; charset=utf-8", //body 데이터가 어떤 타입인지 (MIME)
+				dataType:"json" // 요청을 서버로 해서 응답이 왔을 때 기본적으로 모든 것이 문자열(String) 근데 생긴게 json이면 = > javascript 오브젝트로 변경
+			}).done(function(response){
+				console.log(response);
+				alert("리플 작성을 완료했습니다.");
+				location.href=`/board/${boardId}`;
+			}).fail(function(error){
+				alert(JSON.stringify(error));
+			}); 
+		},
+		
+		replyDelete: function(boardId, replyId){
+			$.ajax({
+				type: "DELETE",
+				url: `/api/board/${boardId}/reply/${replyId}`,
+				dataType:"json"
+			}).done(function(response){
+				console.log(response);
+				alert("댓글삭제 성공");
+				location.href=`/board/${boardId}`;
+			}).fail(function(error){
+				alert(JSON.stringify(error));
+			}); 
 		}
+		
 }
 
 index.init();

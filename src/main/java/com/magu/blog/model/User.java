@@ -31,7 +31,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 프로젝트에서 연결된 DB의 넘버링 전략을 따라간다. AND use-new-id-generator-mappings: falseuse-new-id-generator-mappings: false 라고 YML 에 표현되어있는데 FALSE로 해놓으면 JPA 전략 넘버링을 따라가지 않는다는 뜻
 	private int id; // 시퀀스, mysql에서는 auto_increment 하도록 명시
 	
-	@Column(nullable = false, length = 30, unique =true)
+	@Column(nullable = false, length = 100, unique =true)
 	private String username; // 아이디 역할
 	
 	@Column(nullable = false, length = 100) // 123456 = > 해쉬 (비밀번호 암호화)
@@ -45,6 +45,7 @@ public class User {
 	private RoleType role; // Enum을 쓰는게 좋다. // admin, user, manager 등 각각에 맞게 해야되는데 스트링이면 managerrrr이런식으로 잘못쓸 수 있다.
 											// Enum 만든걸로 설정을해주면 - > 옆에께 강제됨  // ADMIN, USER
 	
+	private String oauth; //kakao, google
 	
 	@CreationTimestamp // 시간이 자동으로 입력된다.
 	private java.sql.Timestamp createDate;

@@ -9,14 +9,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.magu.blog.model.Board;
+import com.magu.blog.model.Reply;
 import com.magu.blog.model.User;
 import com.magu.blog.repository.BoardRepository;
+import com.magu.blog.repository.ReplytRepository;
 
 @Service
 public class BoardService {
 
 	@Autowired
 	private BoardRepository boardRepository;
+	
+	@Autowired
+	private ReplytRepository replyRepository;
 
 	@Transactional
 	public void boardSave(Board board, User user) {
@@ -57,5 +62,23 @@ public class BoardService {
 		board.setContent(requestBoard.getContent());
 		//해당 함수 종료시 (Service가 종료될 때) 트랜잭션이 종료됩니다. 이 때 더티체킹이 일어난다. - 자동 업데이트가 db flush
 		
+	}
+	
+	@Transactional
+	public void replySave(Reply requestReply, int boardId, User user) {
+		
+		Board board = boardRepository.findById(boardId).orElseThrow(() -> {
+			return new IllegalArgumentException("게시글 아이디를 찾을 수 없습니다.");
+		}); 
+		
+		requestReply.setUser(user);
+		requestReply.setBoard(board);
+
+		replyRepository.save(requestReply);
+		
+	}
+	@Transactional
+	public void replyDelete(int replyId) {
+		replyRepository.deleteById(replyId);
 	}
 }

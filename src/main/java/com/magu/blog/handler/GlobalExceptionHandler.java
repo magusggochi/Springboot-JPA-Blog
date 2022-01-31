@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value=Exception.class)
 	public ResponseDto<String> allException(Exception e) {
 		return new ResponseDto<String>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()); //자바오브젝트를 JSON으로 변환해서 리턴 (JACKSON)
+		// INTERNAL_SERVER_ERROR = 500ERROR
 	}
 	
 }
